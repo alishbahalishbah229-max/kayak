@@ -1,0 +1,859 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090807">
+<title>KAYA — Restaurant & Lounge</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --black:#090807;
+  --panel:#11100e;
+  --gold:#d6b77a;
+  --gold-light:#f3dfae;
+  --cream:#eee8dc;
+  --muted:#a7a095;
+  --serif:'Cormorant Garamond',serif;
+  --sans:'DM Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:85px}
+body{background:var(--black);color:var(--cream);font-family:var(--sans);overflow-x:hidden}
+body.loading{overflow:hidden}
+a{color:inherit;text-decoration:none}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+img{display:block;width:100%;object-fit:cover}
+::selection{background:var(--gold);color:#090807}
+::-webkit-scrollbar{width:7px}
+::-webkit-scrollbar-track{background:#090807}
+::-webkit-scrollbar-thumb{background:#927344;border-radius:10px}
+
+/* INTRO */
+.intro{
+ position:fixed;inset:0;z-index:9999;background:#080706;
+ display:flex;align-items:center;justify-content:center;
+ flex-direction:column;gap:18px;
+ transition:opacity 1s ease,visibility 1s ease
+}
+.intro.done{opacity:0;visibility:hidden;pointer-events:none}
+.intro-mark{font:300 clamp(4rem,12vw,9rem)/.8 var(--serif);letter-spacing:.22em;
+ color:var(--gold-light);animation:introWord 1.5s ease both}
+.intro-line{width:0;height:1px;background:var(--gold);animation:lineGrow 1.3s .4s ease forwards}
+.intro-caption{font-size:9px;letter-spacing:.45em;color:#a99a7e;text-transform:uppercase;opacity:0;animation:fadeIn 1s .6s forwards}
+@keyframes introWord{from{opacity:0;filter:blur(15px);transform:scale(1.12);letter-spacing:.5em}to{opacity:1;filter:blur(0);transform:scale(1);letter-spacing:.22em}}
+@keyframes lineGrow{to{width:min(240px,60vw)}}
+@keyframes fadeIn{to{opacity:1}}
+
+/* AMBIENT EFFECTS */
+.grain{
+ position:fixed;inset:-50%;width:200%;height:200%;z-index:50;
+ pointer-events:none;opacity:.045;
+ background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+ animation:grainMove .25s steps(2) infinite
+}
+@keyframes grainMove{0%{transform:translate(0,0)}25%{transform:translate(-2%,1%)}50%{transform:translate(1%,-2%)}75%{transform:translate(2%,2%)}100%{transform:translate(-1%,1%)}}
+.cursor-glow{position:fixed;width:350px;height:350px;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(196,151,79,.075),transparent 70%);transform:translate(-50%,-50%);left:-500px;top:-500px}
+#particles{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.particle{position:absolute;bottom:-20px;width:3px;height:3px;border-radius:50%;background:#e8c783;box-shadow:0 0 12px 2px rgba(220,173,98,.5);animation:floatParticle linear infinite;opacity:0}
+@keyframes floatParticle{
+ 0%{transform:translate3d(0,0,0) scale(.4);opacity:0}
+ 12%{opacity:.65}
+ 85%{opacity:.35}
+ 100%{transform:translate3d(var(--drift),-110vh,0) scale(1.5);opacity:0}
+}
+.gold-rule{height:1px;width:100%;background:linear-gradient(90deg,transparent,#8e7041,#f1d69b,#8e7041,transparent);transform-origin:left}
+.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.3em;color:var(--gold);display:flex;align-items:center;gap:12px}
+.eyebrow:before{content:"";width:28px;height:1px;background:var(--gold)}
+.serif{font-family:var(--serif);font-weight:400}
+.gold{color:var(--gold)}
+.section{position:relative;padding:125px 7%;overflow:hidden}
+.section-kicker{font-size:10px;letter-spacing:.35em;color:var(--gold);text-transform:uppercase;margin-bottom:23px}
+.section-heading{font:400 clamp(3rem,7vw,6.8rem)/.92 var(--serif);letter-spacing:-.035em}
+.section-heading em{font-weight:300;color:var(--gold);font-style:italic}
+.section-copy{font-size:13px;line-height:2;color:var(--muted);max-width:430px}
+.outline-button,.gold-button{
+ display:inline-flex;align-items:center;justify-content:center;gap:20px;
+ min-height:52px;padding:0 27px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+ transition:color .35s,background .35s,border-color .35s,transform .35s;
+ position:relative;overflow:hidden
+}
+.outline-button{border:1px solid rgba(214,183,122,.55);color:var(--cream);background:transparent}
+.outline-button:hover{background:var(--gold);color:#090807;border-color:var(--gold);transform:translateY(-3px)}
+.gold-button{background:var(--gold);color:#090807;border:1px solid var(--gold)}
+.gold-button:hover{background:var(--gold-light);transform:translateY(-3px);box-shadow:0 10px 35px #d6b77a22}
+.button-arrow{font-size:17px;transition:transform .3s}
+.outline-button:hover .button-arrow,.gold-button:hover .button-arrow{transform:translateX(5px)}
+.reveal{opacity:0;transform:translateY(48px);transition:opacity 1s cubic-bezier(.2,.65,.2,1),transform 1s cubic-bezier(.2,.65,.2,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-left{opacity:0;transform:translateX(-55px);transition:opacity 1s ease,transform 1s ease}
+.reveal-left.visible{opacity:1;transform:translateX(0)}
+.reveal-right{opacity:0;transform:translateX(55px);transition:opacity 1s ease,transform 1s ease}
+.reveal-right.visible{opacity:1;transform:translateX(0)}
+.delay-1{transition-delay:.12s!important}.delay-2{transition-delay:.24s!important}.delay-3{transition-delay:.36s!important}
+
+/* NAVIGATION */
+.nav{
+ position:fixed;top:0;left:0;right:0;z-index:100;
+ display:flex;align-items:center;justify-content:space-between;
+ padding:24px 7%;transition:background .5s,padding .5s,border-color .5s;
+ border-bottom:1px solid transparent
+}
+.nav.scrolled{padding-top:15px;padding-bottom:15px;background:rgba(9,8,7,.88);backdrop-filter:blur(18px);border-color:#d6b77a20}
+.brand{display:flex;flex-direction:column;gap:4px}
+.brand-name{font:400 35px/.8 var(--serif);letter-spacing:.23em;color:var(--gold-light)}
+.brand-sub{font-size:7px;letter-spacing:.38em;color:#b2a68e}
+.nav-links{display:flex;align-items:center;gap:34px}
+.nav-links a{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#e3ddd1;position:relative;padding:8px 0}
+.nav-links a:not(.nav-book):after{content:"";position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--gold);transition:width .3s}
+.nav-links a:hover:after{width:100%}
+.nav-links .nav-book{border:1px solid #d6b77a88;padding:13px 18px;color:var(--gold-light);transition:.3s}
+.nav-links .nav-book:hover{background:var(--gold);color:#090807}
+.menu-toggle{display:none;background:none;color:var(--gold);border:0;font-size:25px}
+
+/* HERO — ENTIRELY CSS/JS ANIMATED, NO VIDEO */
+.hero{height:100svh;min-height:690px;position:relative;isolation:isolate;overflow:hidden;background:#090807}
+.hero-scene{position:absolute;inset:0;overflow:hidden;z-index:-3}
+.hero-image{
+ position:absolute;inset:-5%;width:110%;height:110%;
+ background-image:url("https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=2400&q=90");
+ background-position:center 52%;background-size:cover;
+ filter:brightness(.52) saturate(.72);
+ animation:heroDrift 24s ease-in-out infinite alternate;
+ will-change:transform
+}
+@keyframes heroDrift{
+ 0%{transform:scale(1) translate3d(0,0,0)}
+ 50%{transform:scale(1.12) translate3d(-1.5%,1%,0)}
+ 100%{transform:scale(1.19) translate3d(1.3%,-1%,0)}
+}
+.hero-scene:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,5,4,.83),rgba(8,7,6,.32) 57%,rgba(7,6,5,.16)),linear-gradient(0deg,#090807 0%,transparent 24%,rgba(0,0,0,.14) 68%,rgba(0,0,0,.44) 100%)}
+.light-beam{position:absolute;z-index:-1;top:-45%;left:5%;width:35%;height:170%;transform:rotate(28deg);background:linear-gradient(90deg,transparent,rgba(241,205,141,.055),rgba(241,205,141,.11),transparent);filter:blur(22px);animation:beamMove 12s ease-in-out infinite alternate;pointer-events:none}
+.beam-two{left:56%;width:18%;animation-delay:-6s;opacity:.7}
+@keyframes beamMove{from{transform:translateX(-25%) rotate(28deg)}to{transform:translateX(180%) rotate(28deg)}}
+.hero-ring{position:absolute;width:min(70vw,760px);aspect-ratio:1;border:1px solid rgba(221,188,124,.1);border-radius:50%;right:-10%;top:8%;animation:ringRotate 55s linear infinite;pointer-events:none}
+.hero-ring:before,.hero-ring:after{content:"";position:absolute;border:1px solid rgba(221,188,124,.08);border-radius:50%;inset:10%}
+.hero-ring:after{inset:21%;border-color:rgba(221,188,124,.07)}
+@keyframes ringRotate{to{transform:rotate(360deg)}}
+.hero-content{position:absolute;top:50%;left:10%;transform:translateY(-43%);width:min(760px,78%);z-index:5}
+.hero-overline{display:flex;align-items:center;gap:15px;font-size:9px;letter-spacing:.38em;text-transform:uppercase;color:var(--gold-light);margin-bottom:34px;opacity:0;animation:heroEnter 1s .9s forwards}
+.hero-overline:before{content:"";width:44px;height:1px;background:var(--gold)}
+.hero-title{font:300 clamp(6rem,15.4vw,15rem)/.7 var(--serif);letter-spacing:-.075em;color:#f4eddf;white-space:nowrap}
+.hero-title .title-line{display:block;overflow:hidden;padding:0 .08em .13em 0}
+.hero-title .title-word{display:block;opacity:0;transform:translateY(115%) rotate(3deg);animation:titleRise 1.6s cubic-bezier(.18,.7,.2,1) forwards}
+.hero-title .title-line:nth-child(2) .title-word{animation-delay:.2s}
+.hero-title .gold-letter{color:var(--gold-light);font-style:italic;font-weight:300}
+@keyframes titleRise{to{opacity:1;transform:translateY(0) rotate(0)}}
+.hero-description{max-width:370px;font-size:12px;line-height:2;color:#c8c0b2;margin:29px 0 32px;opacity:0;animation:heroEnter 1s 1.15s forwards}
+.hero-actions{display:flex;gap:13px;flex-wrap:wrap;opacity:0;animation:heroEnter 1s 1.35s forwards}
+@keyframes heroEnter{to{opacity:1}}
+.hero-bottom{position:absolute;bottom:39px;left:7%;right:7%;display:flex;align-items:end;justify-content:space-between;z-index:5}
+.hero-location{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#b9b0a1;line-height:2}
+.hero-location span{display:block;color:var(--gold)}
+.scroll-cue{display:flex;align-items:center;gap:14px;font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:#d5c9b6}
+.scroll-cue i{height:48px;width:1px;background:linear-gradient(var(--gold),transparent);position:relative;overflow:hidden}
+.scroll-cue i:after{content:"";position:absolute;top:-100%;height:60%;width:100%;background:#fff;animation:scrollLine 2s ease-in-out infinite}
+@keyframes scrollLine{to{top:120%}}
+.hero-index{font:italic 19px var(--serif);color:#e0c58f}
+.hero-index small{font:9px var(--sans);color:#9f9688}
+.hero-side-label{position:absolute;right:3%;top:50%;writing-mode:vertical-rl;letter-spacing:.35em;font-size:8px;color:#c4b18a;z-index:4}
+
+/* MARQUEE */
+.marquee{overflow:hidden;padding:25px 0;background:#11100e;border-top:1px solid #d6b77a25;border-bottom:1px solid #d6b77a25;position:relative;z-index:3}
+.marquee-track{display:flex;width:max-content;animation:marqueeMove 32s linear infinite}
+.marquee:hover .marquee-track{animation-play-state:paused}
+.marquee-item{display:flex;align-items:center;gap:36px;padding:0 28px;font:italic 29px var(--serif);white-space:nowrap;color:#d6c7a8}
+.marquee-item .star{font:14px var(--sans);color:var(--gold)}
+@keyframes marqueeMove{to{transform:translateX(-50%)}}
+
+/* STORY */
+.story{background:radial-gradient(ellipse at 0% 60%,#3024153d,transparent 45%),#0c0b09}
+.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:10%;align-items:center}
+.story-visual{position:relative;min-height:620px}
+.story-main-image{position:absolute;inset:0 12% 7% 0;overflow:hidden}
+.story-main-image img{height:100%;filter:brightness(.77) saturate(.72);transition:transform 1.4s cubic-bezier(.2,.7,.2,1)}
+.story-main-image:hover img{transform:scale(1.07)}
+.story-main-image:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#0b0907a6,transparent 55%)}
+.story-small-image{position:absolute;width:43%;height:42%;right:0;bottom:0;border:7px solid #0c0b09;overflow:hidden}
+.story-small-image img{height:100%;filter:brightness(.82);transition:transform 1s}
+.story-small-image:hover img{transform:scale(1.09)}
+.image-number{position:absolute;left:25px;bottom:25px;font:italic 19px var(--serif);color:var(--gold-light);z-index:2}
+.story-stamp{position:absolute;right:3%;top:6%;width:110px;height:110px;border:1px solid #d6b77a8a;border-radius:50%;display:grid;place-items:center;text-align:center;background:#0b0907b8;animation:stampRotate 25s linear infinite}
+.story-stamp span{font-size:8px;letter-spacing:.16em;line-height:1.8;color:var(--gold-light)}
+@keyframes stampRotate{to{transform:rotate(360deg)}}
+.story-copy .section-heading{margin-bottom:28px}
+.story-copy .section-copy{margin-bottom:34px}
+.story-signature{margin-top:38px;display:flex;align-items:center;gap:16px}
+.signature-mark{font:italic 38px var(--serif);color:var(--gold)}
+.signature-caption{font-size:9px;letter-spacing:.15em;color:#a9a092;line-height:1.9}
+
+/* FULL BLEED IMAGE BREAK */
+.image-break{height:75vh;min-height:470px;position:relative;overflow:hidden;display:grid;place-items:center;text-align:center}
+.image-break-bg{position:absolute;inset:-12%;background:url("https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=2200&q=90") center/cover;filter:brightness(.46) saturate(.68);animation:breakDrift 28s ease-in-out infinite alternate}
+@keyframes breakDrift{to{transform:scale(1.18) translate3d(-2%,1%,0)}}
+.image-break:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#090807,transparent 38%,transparent 60%,#090807)}
+.break-content{position:relative;z-index:2;padding:30px}
+.break-content .section-kicker{margin-bottom:28px}
+.break-title{font:300 clamp(3.5rem,9.5vw,9rem)/.9 var(--serif);letter-spacing:-.035em}
+.break-title em{color:var(--gold-light);font-weight:300}
+.break-bottom{margin-top:30px;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:#d3c6ad}
+
+/* MENU */
+.menu-section{background:#0c0b09}
+.menu-head{display:flex;align-items:end;justify-content:space-between;gap:30px;margin-bottom:65px}
+.menu-head .section-heading{margin-top:12px}
+.menu-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:25px}
+.dish-card{position:relative;min-width:0;background:#14120f;border:1px solid #d6b77a19;overflow:hidden;transition:border-color .5s,transform .5s}
+.dish-card:hover{border-color:#d6b77a70;transform:translateY(-8px)}
+.dish-image{height:370px;position:relative;overflow:hidden}
+.dish-image img{height:100%;filter:brightness(.78) saturate(.8);transition:transform 1.2s cubic-bezier(.2,.7,.2,1),filter .6s}
+.dish-card:hover .dish-image img{transform:scale(1.1);filter:brightness(.98) saturate(1)}
+.dish-image:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#0b0907a8,transparent 65%)}
+.dish-tag{position:absolute;top:19px;left:19px;z-index:2;font-size:8px;letter-spacing:.2em;text-transform:uppercase;padding:9px 12px;border:1px solid #e2c9917a;background:#09080791;color:var(--gold-light)}
+.dish-content{padding:24px 23px 26px}
+.dish-meta{display:flex;justify-content:space-between;align-items:start;gap:15px;margin-bottom:12px}
+.dish-name{font:400 31px/1 var(--serif);color:#f0e7d6}
+.dish-price{font:italic 21px var(--serif);color:var(--gold-light);white-space:nowrap}
+.dish-description{font-size:11px;line-height:1.9;color:#a8a093;min-height:42px}
+.dish-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:23px;padding-top:17px;border-top:1px solid #d6b77a25}
+.dish-bottom span{font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:#b3a890}
+.dish-plus{font-size:22px;color:var(--gold);transition:transform .3s}
+.dish-card:hover .dish-plus{transform:rotate(90deg)}
+.menu-foot{text-align:center;margin-top:50px}
+
+/* EXPERIENCE */
+.experience{padding-top:100px;padding-bottom:110px;background:radial-gradient(ellipse at 100% 45%,#33241438,transparent 42%),#100e0b}
+.experience-layout{display:grid;grid-template-columns:.85fr 1.15fr;gap:8%;align-items:center}
+.experience-copy .section-heading{margin:18px 0 28px}
+.experience-copy .section-copy{margin-bottom:35px}
+.experience-list{margin-top:42px;border-top:1px solid #d6b77a30}
+.experience-item{display:flex;align-items:center;gap:20px;padding:20px 0;border-bottom:1px solid #d6b77a30}
+.experience-num{font:italic 20px var(--serif);color:var(--gold)}
+.experience-item strong{display:block;font:400 25px var(--serif);margin-bottom:3px}
+.experience-item span:last-child{font-size:10px;color:#a7a095}
+.experience-images{position:relative;min-height:650px}
+.experience-image-one{position:absolute;top:0;right:0;width:76%;height:75%;overflow:hidden}
+.experience-image-one img,.experience-image-two img{height:100%;filter:brightness(.8) saturate(.72);transition:transform 1.4s}
+.experience-image-one:hover img,.experience-image-two:hover img{transform:scale(1.08)}
+.experience-image-two{position:absolute;left:0;bottom:0;width:48%;height:43%;border:8px solid #100e0b;overflow:hidden}
+.experience-image-one:after{content:"";position:absolute;inset:0;border:1px solid #d6b77a36;pointer-events:none}
+.experience-note{position:absolute;right:0;bottom:3%;font:italic 17px var(--serif);color:var(--gold-light);writing-mode:vertical-rl;letter-spacing:.1em}
+
+/* QUOTE */
+.quote-section{padding:145px 8%;text-align:center;position:relative;overflow:hidden;background:#090807}
+.quote-orbit{position:absolute;width:500px;height:500px;border:1px solid #d6b77a14;border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none}
+.quote-orbit:before,.quote-orbit:after{content:"";position:absolute;inset:40px;border:1px solid #d6b77a10;border-radius:50%}
+.quote-orbit:after{inset:100px}
+.quote-mark{font:100px/.8 var(--serif);color:var(--gold);opacity:.7;margin-bottom:22px}
+.quote-text{font:300 clamp(2.5rem,6.6vw,6rem)/1.08 var(--serif);max-width:1000px;margin:auto;position:relative}
+.quote-text em{color:var(--gold-light);font-weight:300}
+.quote-caption{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:#a99f8d;margin-top:35px;position:relative}
+.quote-stars{margin-top:28px;color:var(--gold);letter-spacing:.5em;font-size:11px;position:relative}
+
+/* GALLERY */
+.gallery-section{background:#0e0c0a;padding-bottom:125px}
+.gallery-heading{display:flex;justify-content:space-between;align-items:end;margin-bottom:50px;gap:20px}
+.gallery-grid{display:grid;grid-template-columns:1.15fr .85fr 1fr;grid-template-rows:280px 250px;gap:15px}
+.gallery-item{position:relative;overflow:hidden;background:#181510}
+.gallery-item:first-child{grid-row:span 2}
+.gallery-item:nth-child(4){grid-column:2/4}
+.gallery-item img{height:100%;filter:brightness(.72) saturate(.72);transition:transform 1.3s cubic-bezier(.2,.7,.2,1),filter .7s}
+.gallery-item:hover img{transform:scale(1.09);filter:brightness(.95) saturate(.95)}
+.gallery-item:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#080706a6,transparent 55%);pointer-events:none}
+.gallery-label{position:absolute;bottom:22px;left:23px;z-index:2;font:italic 24px var(--serif);color:#f0e2c6}
+.gallery-label small{display:block;font:8px var(--sans);letter-spacing:.2em;text-transform:uppercase;color:#d6b77a;margin-bottom:7px}
+.gallery-counter{margin-top:25px;display:flex;justify-content:space-between;font-size:9px;letter-spacing:.18em;color:#9d9382;text-transform:uppercase}
+
+/* RESERVATION */
+.reservation{background:#0a0907;position:relative}
+.reservation-bg{position:absolute;inset:0 0 0 48%;background:url("https://images.unsplash.com/photo-1515003197210-e0cd7184f8b5?auto=format&fit=crop&w=1600&q=85") center/cover;opacity:.26;filter:brightness(.65) saturate(.5);mask-image:linear-gradient(90deg,transparent,#000 30%)}
+.reservation-grid{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:9%;align-items:start}
+.reservation-copy .section-heading{margin:17px 0 26px}
+.reservation-copy .section-copy{margin-bottom:32px}
+.reservation-detail{display:flex;gap:17px;margin-top:24px;align-items:start}
+.detail-symbol{font-size:17px;color:var(--gold)}
+.reservation-detail strong{display:block;font:400 22px var(--serif);margin-bottom:5px}
+.reservation-detail span{font-size:11px;color:#aaa092;line-height:1.8}
+.reservation-form{padding:35px;background:#13110edb;border:1px solid #d6b77a36;backdrop-filter:blur(12px)}
+.form-title{font:400 35px var(--serif);margin-bottom:8px}
+.form-subtitle{font-size:10px;color:#a9a093;margin-bottom:30px;line-height:1.8}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:17px}
+.form-field{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.form-field label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#c7bba5}
+.form-field input,.form-field select,.form-field textarea{width:100%;min-height:48px;padding:13px 14px;background:#090807;border:1px solid #d6b77a30;color:#f0e7d8;border-radius:0;outline:none;font-size:11px;transition:border-color .3s}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--gold)}
+.form-field select{color-scheme:dark}
+.form-field textarea{resize:vertical;min-height:85px}
+.form-field input::placeholder,.form-field textarea::placeholder{color:#71695e}
+.form-submit{width:100%;margin-top:5px}
+.form-message{display:none;margin-top:17px;font-size:11px;line-height:1.8;color:var(--gold-light)}
+.form-message.show{display:block}
+
+/* FOOTER */
+.footer{background:#070706;padding:70px 7% 25px;border-top:1px solid #d6b77a2b}
+.footer-main{display:grid;grid-template-columns:1.2fr .8fr .8fr 1fr;gap:50px;padding-bottom:60px}
+.footer-brand{font:400 49px/.9 var(--serif);letter-spacing:.15em;color:var(--gold-light)}
+.footer-tagline{font-size:9px;letter-spacing:.27em;text-transform:uppercase;color:#9e9074;margin-top:12px}
+.footer-intro{font-size:11px;line-height:2;color:#999084;max-width:240px;margin-top:23px}
+.footer-heading{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:25px}
+.footer-links{display:flex;flex-direction:column;gap:14px}
+.footer-links a,.footer-links span{font-size:11px;color:#b0a79a;transition:color .3s}
+.footer-links a:hover{color:var(--gold-light)}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-top:23px;border-top:1px solid #d6b77a20;font-size:9px;color:#80776b;letter-spacing:.08em}
+.footer-socials{display:flex;gap:20px}
+.footer-socials a{color:#b8aa91}
+.footer-socials a:hover{color:var(--gold-light)}
+.back-top{width:36px;height:36px;border:1px solid #d6b77a50;display:grid;place-items:center;color:var(--gold);transition:.3s}
+.back-top:hover{background:var(--gold);color:#090807}
+
+/* MOTION PREFERENCES */
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+ .reveal,.reveal-left,.reveal-right{opacity:1;transform:none}
+}
+
+/* RESPONSIVE */
+@media(max-width:1050px){
+ .nav{padding-left:5%;padding-right:5%}
+ .nav-links{gap:20px}
+ .nav-links a{font-size:8px}
+ .section{padding-left:5%;padding-right:5%}
+ .story-grid{gap:6%}
+ .story-visual{min-height:540px}
+ .dish-image{height:300px}
+ .experience-layout{gap:5%}
+ .experience-images{min-height:560px}
+ .footer-main{gap:28px}
+}
+@media(max-width:760px){
+ html{scroll-padding-top:72px}
+ .nav{padding:18px 6%}
+ .nav.scrolled{padding:13px 6%}
+ .brand-name{font-size:30px}
+ .menu-toggle{display:block;position:relative;z-index:102}
+ .nav-links{position:fixed;inset:0;background:rgba(8,7,6,.98);backdrop-filter:blur(20px);display:flex;flex-direction:column;justify-content:center;gap:25px;transform:translateY(-110%);opacity:0;visibility:hidden;transition:transform .5s,opacity .4s,visibility .4s}
+ .nav-links.open{transform:translateY(0);opacity:1;visibility:visible}
+ .nav-links a{font:400 30px var(--serif);letter-spacing:.08em;text-transform:none}
+ .nav-links .nav-book{font:10px var(--sans);letter-spacing:.2em;text-transform:uppercase;margin-top:10px}
+ .hero{min-height:690px;height:100svh}
+ .hero-image{background-position:58% center}
+ .hero-content{left:7%;width:88%;top:47%;transform:translateY(-40%)}
+ .hero-title{font-size:clamp(5.3rem,18vw,9rem)}
+ .hero-overline{font-size:8px;letter-spacing:.23em;margin-bottom:28px}
+ .hero-description{max-width:320px;font-size:11px;margin:24px 0 26px}
+ .hero-bottom{left:7%;right:7%;bottom:28px}
+ .hero-location{font-size:8px}
+ .hero-side-label{display:none}
+ .hero-ring{width:105vw;right:-45%;top:18%}
+ .section{padding:90px 7%}
+ .section-heading{font-size:clamp(3.2rem,12vw,5.8rem)}
+ .story-grid,.experience-layout,.reservation-grid{grid-template-columns:1fr;gap:50px}
+ .story-visual{min-height:510px}
+ .story-copy{max-width:550px}
+ .story-stamp{width:90px;height:90px}
+ .image-break{height:65vh;min-height:420px}
+ .break-title{font-size:clamp(3.5rem,12vw,6rem)}
+ .menu-head,.gallery-heading{align-items:start;flex-direction:column}
+ .menu-head .outline-button{margin-top:10px}
+ .menu-grid{grid-template-columns:1fr 1fr;gap:14px}
+ .dish-image{height:260px}
+ .dish-content{padding:19px 15px}
+ .dish-name{font-size:26px}
+ .dish-price{font-size:19px}
+ .dish-description{font-size:10px}
+ .experience-images{min-height:530px}
+ .quote-section{padding:110px 7%}
+ .quote-orbit{width:350px;height:350px}
+ .gallery-grid{grid-template-columns:1fr 1fr;grid-template-rows:300px 210px 230px;gap:10px}
+ .gallery-item:first-child{grid-row:span 1}
+ .gallery-item:nth-child(4){grid-column:1/3}
+ .gallery-label{left:15px;bottom:15px;font-size:20px}
+ .reservation-bg{inset:0;opacity:.12;mask-image:linear-gradient(180deg,#000,transparent)}
+ .reservation-form{padding:25px}
+ .footer-main{grid-template-columns:1fr 1fr;gap:38px 25px}
+ .footer-brand-block{grid-column:1/3}
+}
+@media(max-width:440px){
+ .hero-title{font-size:19vw}
+ .hero-actions{gap:9px}
+ .hero-actions .outline-button,.hero-actions .gold-button{padding:0 15px;min-height:48px;font-size:9px}
+ .hero-index{font-size:15px}
+ .story-visual{min-height:410px}
+ .story-main-image{inset:0 9% 8% 0}
+ .story-small-image{width:47%;height:39%;border-width:5px}
+ .menu-grid{grid-template-columns:1fr}
+ .dish-image{height:340px}
+ .dish-content{padding:22px}
+ .dish-name{font-size:30px}
+ .dish-description{font-size:11px}
+ .experience-images{min-height:430px}
+ .experience-image-one{height:75%;width:82%}
+ .experience-image-two{height:40%;width:52%}
+ .gallery-grid{grid-template-rows:240px 190px 190px}
+ .gallery-item:nth-child(3){grid-column:1/3}
+ .form-row{grid-template-columns:1fr;gap:0}
+ .reservation-form{padding:22px 18px}
+ .footer-main{grid-template-columns:1fr 1fr;gap:32px 18px}
+ .footer-brand{font-size:42px}
+ .footer-bottom{align-items:flex-start;flex-direction:column}
+ .quote-orbit{width:280px;height:280px}
+}
+</style>
+</head>
+
+<body class="loading">
+
+<div class="intro" id="intro" aria-label="KAYA loading">
+  <div class="intro-mark">KAYA</div>
+  <div class="intro-line"></div>
+  <div class="intro-caption">An experience beyond dining</div>
+</div>
+
+<div class="grain"></div>
+<div class="cursor-glow" id="cursorGlow"></div>
+<div id="particles" aria-hidden="true"></div>
+
+<header class="nav" id="navbar">
+  <a href="#home" class="brand" aria-label="KAYA home">
+    <span class="brand-name">KAYA</span>
+    <span class="brand-sub">RESTAURANT & LOUNGE</span>
+  </a>
+  <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">☰</button>
+  <nav class="nav-links" id="navLinks">
+    <a href="#home">Home</a>
+    <a href="#story">Our Story</a>
+    <a href="#menu">The Menu</a>
+    <a href="#experience">Experience</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#reservation" class="nav-book">Reserve a Table ↗</a>
+  </nav>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-scene">
+      <div class="hero-image" id="heroImage"></div>
+    </div>
+    <div class="light-beam"></div>
+    <div class="light-beam beam-two"></div>
+    <div class="hero-ring"></div>
+
+    <div class="hero-content">
+      <div class="hero-overline">A destination for the senses</div>
+      <h1 class="hero-title">
+        <span class="title-line"><span class="title-word">K<span class="gold-letter">A</span>YA</span></span>
+        <span class="title-line"><span class="title-word"><span class="gold-letter">A</span>fter Dark.</span></span>
+      </h1>
+      <p class="hero-description">Where exceptional flavours meet captivating ambience. Discover a world of refined dining, intimate moments, and unforgettable evenings.</p>
+      <div class="hero-actions">
+        <a href="#menu" class="gold-button">Explore the menu <span class="button-arrow">↗</span></a>
+        <a href="#reservation" class="outline-button">Reserve your evening <span class="button-arrow">↗</span></a>
+      </div>
+    </div>
+
+    <div class="hero-side-label">An extraordinary dining experience</div>
+    <div class="hero-bottom">
+      <div class="hero-location">An evening worth remembering<span>Restaurant · Lounge · Experience</span></div>
+      <a class="scroll-cue" href="#story"><i></i> Scroll to discover</a>
+      <div class="hero-index">01 <small>/ 04</small></div>
+    </div>
+  </section>
+
+  <!-- MOVING TYPOGRAPHY -->
+  <div class="marquee" aria-label="KAYA dining experience">
+    <div class="marquee-track">
+      <div class="marquee-item">Beyond the ordinary <span class="star">✳</span> Crafted with passion <span class="star">✳</span> Made for the moment <span class="star">✳</span> A taste of the extraordinary <span class="star">✳</span></div>
+      <div class="marquee-item">Beyond the ordinary <span class="star">✳</span> Crafted with passion <span class="star">✳</span> Made for the moment <span class="star">✳</span> A taste of the extraordinary <span class="star">✳</span></div>
+    </div>
+  </div>
+
+  <!-- STORY -->
+  <section class="section story" id="story">
+    <div class="story-grid">
+      <div class="story-visual reveal-left">
+        <div class="story-main-image">
+          <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1100&q=85" alt="Warm, intimate luxury restaurant interior" loading="lazy">
+          <span class="image-number">01 — The setting</span>
+        </div>
+        <div class="story-small-image">
+          <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=650&q=85" alt="Elegant fine dining table" loading="lazy">
+        </div>
+        <div class="story-stamp"><span>CRAFTED<br>WITH CARE<br>✳ EST. WITH<br>PASSION ✳</span></div>
+      </div>
+      <div class="story-copy reveal-right">
+        <div class="section-kicker">The art of being together</div>
+        <h2 class="section-heading">More than a<br>meal. <em>A feeling.</em></h2>
+        <p class="section-copy">At KAYA, every detail is an invitation to slow down. From the first flicker of candlelight to the final unforgettable bite, we bring together thoughtful hospitality, beautiful surroundings and a passion for flavour.</p>
+        <p class="section-copy" style="margin-top:15px">Created for long conversations, spontaneous celebrations and evenings that stay with you long after the last course.</p>
+        <a href="#experience" class="outline-button" style="margin-top:30px">Discover our world <span class="button-arrow">↗</span></a>
+        <div class="story-signature">
+          <div class="signature-mark">K.</div>
+          <div class="signature-caption">THE KAYA EXPERIENCE<br><span class="gold">Thoughtfully imagined. Beautifully served.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CINEMATIC BREAK -->
+  <section class="image-break">
+    <div class="image-break-bg" id="breakImage"></div>
+    <div class="break-content reveal">
+      <div class="section-kicker">A world of its own</div>
+      <h2 class="break-title">Stay for the<br><em>feeling.</em></h2>
+      <p class="break-bottom">Good food · Great company · Golden hours</p>
+    </div>
+  </section>
+
+  <!-- MENU -->
+  <section class="section menu-section" id="menu">
+    <div class="menu-head reveal">
+      <div>
+        <div class="section-kicker">Made to be remembered</div>
+        <h2 class="section-heading">A taste of<br><em>something special.</em></h2>
+      </div>
+      <a href="#reservation" class="outline-button">Join us at KAYA <span class="button-arrow">↗</span></a>
+    </div>
+
+    <div class="menu-grid">
+      <article class="dish-card reveal">
+        <div class="dish-image">
+          <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=900&q=85" alt="Chef-inspired gourmet dish" loading="lazy">
+          <span class="dish-tag">Signature selection</span>
+        </div>
+        <div class="dish-content">
+          <div class="dish-meta"><h3 class="dish-name">The Signature</h3><span class="dish-price">Chef's pick</span></div>
+          <p class="dish-description">An artful composition of rich flavours, seasonal ingredients and considered presentation.</p>
+          <div class="dish-bottom"><span>Crafted with intention</span><span class="dish-plus">↗</span></div>
+        </div>
+      </article>
+
+      <article class="dish-card reveal delay-1">
+        <div class="dish-image">
+          <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=85" alt="Grilled gourmet main course" loading="lazy">
+          <span class="dish-tag">From the grill</span>
+        </div>
+        <div class="dish-content">
+          <div class="dish-meta"><h3 class="dish-name">Ember & Oak</h3><span class="dish-price">À la carte</span></div>
+          <p class="dish-description">Deep, smoky character meets delicate seasoning in a beautifully balanced creation.</p>
+          <div class="dish-bottom"><span>Bold & beautifully balanced</span><span class="dish-plus">↗</span></div>
+        </div>
+      </article>
+
+      <article class="dish-card reveal delay-2">
+        <div class="dish-image">
+          <img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=900&q=85" alt="Beautifully presented dessert" loading="lazy">
+          <span class="dish-tag">The sweet ending</span>
+        </div>
+        <div class="dish-content">
+          <div class="dish-meta"><h3 class="dish-name">Golden Hour</h3><span class="dish-price">House favourite</span></div>
+          <p class="dish-description">A decadent finale created for those who believe the best moments deserve something sweet.</p>
+          <div class="dish-bottom"><span>A little indulgence</span><span class="dish-plus">↗</span></div>
+        </div>
+      </article>
+    </div>
+
+    <div class="menu-foot reveal">
+      <p class="section-copy" style="margin:0 auto 25px;text-align:center">Our menu concept celebrates flavour, seasonality and the pleasure of sharing something wonderful.</p>
+      <a href="#reservation" class="gold-button">Experience KAYA <span class="button-arrow">↗</span></a>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section class="section experience" id="experience">
+    <div class="experience-layout">
+      <div class="experience-copy reveal-left">
+        <div class="section-kicker">The atmosphere is everything</div>
+        <h2 class="section-heading">Every corner<br>tells a <em>story.</em></h2>
+        <p class="section-copy">Soft lighting. Thoughtful details. The gentle rhythm of an evening unfolding. KAYA is designed to feel intimate yet extraordinary — a place to celebrate, connect and simply be.</p>
+        <div class="experience-list">
+          <div class="experience-item"><span class="experience-num">01</span><div><strong>Intimate Dining</strong><span>For moments worth slowing down for.</span></div></div>
+          <div class="experience-item"><span class="experience-num">02</span><div><strong>Evening Lounge</strong><span>Settle in. Let the night unfold.</span></div></div>
+          <div class="experience-item"><span class="experience-num">03</span><div><strong>Special Occasions</strong><span>Make your next gathering memorable.</span></div></div>
+        </div>
+      </div>
+      <div class="experience-images reveal-right">
+        <div class="experience-image-one"><img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1100&q=85" alt="Sophisticated restaurant lounge" loading="lazy"></div>
+        <div class="experience-image-two"><img src="https://images.unsplash.com/photo-1515003197210-e0cd7184f8b5?auto=format&fit=crop&w=750&q=85" alt="Carefully prepared food" loading="lazy"></div>
+        <div class="experience-note">An atmosphere to remember</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUOTE -->
+  <section class="quote-section">
+    <div class="quote-orbit"></div>
+    <div class="reveal">
+      <div class="quote-mark">“</div>
+      <p class="quote-text">Some evenings become memories.<br><em>Some become your favourite story.</em></p>
+      <div class="quote-stars">✳ ✳ ✳</div>
+      <p class="quote-caption">This is the KAYA feeling</p>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="section gallery-section" id="gallery">
+    <div class="gallery-heading reveal">
+      <div>
+        <div class="section-kicker">A glimpse into our world</div>
+        <h2 class="section-heading">The KAYA <em>frames.</em></h2>
+      </div>
+      <p class="section-copy">Little details. Beautiful spaces. Moments that make an evening feel like something more.</p>
+    </div>
+    <div class="gallery-grid">
+      <div class="gallery-item reveal">
+        <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1000&q=85" alt="Elegant fine dining" loading="lazy">
+        <div class="gallery-label"><small>01 / Dining</small>Gather around</div>
+      </div>
+      <div class="gallery-item reveal delay-1">
+        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=85" alt="Restaurant ambience" loading="lazy">
+        <div class="gallery-label"><small>02 / Ambience</small>Find your place</div>
+      </div>
+      <div class="gallery-item reveal delay-2">
+        <img src="https://images.unsplash.com/photo-1547595628-c61a29f496f0?auto=format&fit=crop&w=800&q=85" alt="Beautifully presented cuisine" loading="lazy">
+        <div class="gallery-label"><small>03 / Flavour</small>Made with care</div>
+      </div>
+      <div class="gallery-item reveal">
+        <img src="https://images.unsplash.com/photo-1515003197210-e0cd7184f8b5?auto=format&fit=crop&w=1300&q=85" alt="An inviting culinary creation" loading="lazy">
+        <div class="gallery-label"><small>04 / The details</small>Every moment matters</div>
+      </div>
+    </div>
+    <div class="gallery-counter"><span>Visual notes from KAYA</span><span>Crafted for the senses — ✳</span></div>
+  </section>
+
+  <!-- RESERVATION -->
+  <section class="section reservation" id="reservation">
+    <div class="reservation-bg"></div>
+    <div class="reservation-grid">
+      <div class="reservation-copy reveal-left">
+        <div class="section-kicker">Your evening awaits</div>
+        <h2 class="section-heading">Make room<br>for <em>something<br>beautiful.</em></h2>
+        <p class="section-copy">A table, your favourite people, and an evening with no need to rush. Tell us a little about your plans.</p>
+        <div class="reservation-detail"><span class="detail-symbol">✳</span><div><strong>Thoughtful hospitality</strong><span>Every detail matters. Every guest is welcome.</span></div></div>
+        <div class="reservation-detail"><span class="detail-symbol">✳</span><div><strong>Special moments</strong><span>Planning a celebration? Let us know.</span></div></div>
+        <div class="reservation-detail"><span class="detail-symbol">✳</span><div><strong>Come as you are</strong><span>Leave the ordinary at the door.</span></div></div>
+      </div>
+
+      <form class="reservation-form reveal-right" id="reservationForm">
+        <h3 class="form-title">Reserve your table.</h3>
+        <p class="form-subtitle">Share your preferred details below. This demo form will confirm your request on screen; connect it to a booking service to receive real reservations.</p>
+
+        <div class="form-row">
+          <div class="form-field"><label for="guestName">Your name</label><input id="guestName" name="name" placeholder="Full name" required maxlength="100"></div>
+          <div class="form-field"><label for="guestEmail">Email address</label><input id="guestEmail" name="email" type="email" placeholder="you@example.com" required></div>
+        </div>
+        <div class="form-row">
+          <div class="form-field"><label for="bookingDate">Preferred date</label><input id="bookingDate" name="date" type="date" required></div>
+          <div class="form-field"><label for="bookingTime">Preferred time</label>
+            <select id="bookingTime" name="time" required>
+              <option value="">Choose a time</option>
+              <option>05:00 PM</option><option>06:00 PM</option>
+              <option>07:00 PM</option><option>08:00 PM</option>
+              <option>09:00 PM</option><option>10:00 PM</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field"><label for="guestCount">Number of guests</label>
+            <select id="guestCount" name="guests" required>
+              <option value="">Select guests</option>
+              <option>1 guest</option><option>2 guests</option><option>3 guests</option>
+              <option>4 guests</option><option>5 guests</option><option>6 guests</option><option>7+ guests</option>
+            </select>
+          </div>
+          <div class="form-field"><label for="occasion">Occasion</label>
+            <select id="occasion" name="occasion">
+              <option>Just because</option><option>Birthday</option><option>Anniversary</option><option>Family dinner</option><option>Business dinner</option><option>Other celebration</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-field"><label for="bookingNotes">Special requests</label><textarea id="bookingNotes" name="notes" placeholder="Tell us anything that would make your evening special..."></textarea></div>
+        <button type="submit" class="gold-button form-submit">Request a reservation <span class="button-arrow">↗</span></button>
+        <p class="form-message" id="formMessage" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-main">
+    <div class="footer-brand-block">
+      <a href="#home" class="footer-brand">KAYA</a>
+      <div class="footer-tagline">Restaurant & Lounge</div>
+      <p class="footer-intro">An experience beyond dining. Created for beautiful flavours, meaningful moments and evenings worth remembering.</p>
+    </div>
+    <div>
+      <h3 class="footer-heading">Explore</h3>
+      <div class="footer-links">
+        <a href="#story">Our story</a><a href="#menu">The menu</a><a href="#experience">The experience</a><a href="#gallery">Gallery</a>
+      </div>
+    </div>
+    <div>
+      <h3 class="footer-heading">Visit KAYA</h3>
+      <div class="footer-links">
+        <a href="#reservation">Reserve a table</a><a href="#reservation">Special occasions</a><span>Hours: To be announced</span><span>Location: Add your address</span>
+      </div>
+    </div>
+    <div>
+      <h3 class="footer-heading">Stay connected</h3>
+      <div class="footer-links">
+        <span>Follow our story</span>
+        <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">Instagram ↗</a>
+        <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">Facebook ↗</a>
+        <a href="#reservation">Get in touch ↗</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© <span id="year"></span> KAYA Restaurant & Lounge. All rights reserved.</span>
+    <span>Created with intention. Served with soul.</span>
+    <div class="footer-socials"><a href="#home">Back to top ↑</a></div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const $ = (selector) => document.querySelector(selector);
+  const $$ = (selector) => [...document.querySelectorAll(selector)];
+
+  // CINEMATIC INTRO
+  const intro = $("#intro");
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      intro.classList.add("done");
+      document.body.classList.remove("loading");
+    }, 1550);
+  });
+  // Fallback for unusual cases where the load event already happened.
+  if (document.readyState === "complete") {
+    setTimeout(() => {
+      intro.classList.add("done");
+      document.body.classList.remove("loading");
+    }, 1550);
+  }
+
+  // NAVIGATION ON SCROLL
+  const navbar = $("#navbar");
+  const updateNav = () => navbar.classList.toggle("scrolled", window.scrollY > 40);
+  window.addEventListener("scroll", updateNav, {passive:true});
+  updateNav();
+
+  // MOBILE MENU
+  const toggle = $("#menuToggle");
+  const navLinks = $("#navLinks");
+  toggle.addEventListener("click", () => {
+    const open = navLinks.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    toggle.textContent = open ? "×" : "☰";
+  });
+  $$("#navLinks a").forEach(link => link.addEventListener("click", () => {
+    navLinks.classList.remove("open");
+    toggle.setAttribute("aria-expanded","false");
+    toggle.setAttribute("aria-label","Open menu");
+    toggle.textContent = "☰";
+  }));
+
+  // SCROLL REVEALS
+  const revealObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.13, rootMargin:"0px 0px -35px 0px"});
+
+  $$(".reveal,.reveal-left,.reveal-right").forEach(el => revealObserver.observe(el));
+
+  // AMBIENT GOLD PARTICLES — NO VIDEO
+  const particleHost = $("#particles");
+  const particleCount = window.matchMedia("(max-width: 600px)").matches ? 15 : 29;
+
+  for(let i=0;i<particleCount;i++){
+    const particle = document.createElement("span");
+    particle.className = "particle";
+    particle.style.left = (Math.random()*100)+"%";
+    particle.style.animationDuration = (11+Math.random()*19)+"s";
+    particle.style.animationDelay = (-Math.random()*24)+"s";
+    particle.style.setProperty("--drift", (Math.random()*160-80)+"px");
+    particle.style.width = particle.style.height = (1.5+Math.random()*2.2)+"px";
+    particleHost.appendChild(particle);
+  }
+
+  // POINTER LIGHT ON DESKTOP
+  const glow = $("#cursorGlow");
+  const canHover = window.matchMedia("(hover:hover) and (pointer:fine)").matches;
+  if(canHover){
+    window.addEventListener("pointermove", e => {
+      glow.style.left = e.clientX+"px";
+      glow.style.top = e.clientY+"px";
+    }, {passive:true});
+  }else{
+    glow.style.display = "none";
+  }
+
+  // SUBTLE SCROLL PARALLAX FOR THE HERO AND CINEMATIC BREAK
+  const heroImage = $("#heroImage");
+  const breakImage = $("#breakImage");
+  let ticking = false;
+
+  function updateParallax(){
+    const y = window.scrollY;
+    if(y < window.innerHeight*1.2){
+      heroImage.style.backgroundPosition = `center calc(52% + ${y*0.12}px)`;
+    }
+    const rect = breakImage.getBoundingClientRect();
+    if(rect.bottom > 0 && rect.top < window.innerHeight){
+      const offset = (rect.top-window.innerHeight/2)*-0.06;
+      breakImage.style.backgroundPosition = `center calc(50% + ${offset}px)`;
+    }
+    ticking = false;
+  }
+
+  window.addEventListener("scroll", () => {
+    if(!ticking){
+      window.requestAnimationFrame(updateParallax);
+      ticking = true;
+    }
+  }, {passive:true});
+
+  // RESERVATION DEMO
+  const dateInput = $("#bookingDate");
+  const today = new Date();
+  const localToday = new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+  dateInput.min = localToday;
+
+  $("#reservationForm").addEventListener("submit", event => {
+    event.preventDefault();
+
+    if(!event.currentTarget.reportValidity()) return;
+
+    const formData = new FormData(event.currentTarget);
+    const guestName = String(formData.get("name") || "").trim();
+    const bookingDate = String(formData.get("date") || "");
+
+    if(bookingDate < localToday){
+      $("#formMessage").textContent = "Please select today or a future date.";
+      $("#formMessage").classList.add("show");
+      return;
+    }
+
+    const message = $("#formMessage");
+    message.textContent = `Thank you, ${guestName}. Your reservation request for ${bookingDate} has been prepared. This is a front-end demo, so no booking has been sent to the restaurant yet.`;
+    message.classList.add("show");
+  });
+
+  // FOOTER YEAR
+  $("#year").textContent = new Date().getFullYear();
+})();
+</script>
+</body>
+</html>
